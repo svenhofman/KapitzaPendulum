@@ -284,6 +284,3 @@ def plot_grid_damping_angle0():
     plt.savefig(os.path.join('images', "theta-bp.pdf"))
 
     plt.show()
-
-
-plot_grid_amplitude_omega()

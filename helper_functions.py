@@ -44,6 +44,6 @@ def make_gif():
             images.append(imageio.imread(file_path))
     imageio.mimsave(os.path.join("images", 'simulation.gif'), images)
 
-    # for file in os.listdir(jpg_dir):
-    #     if file.endswith('.jpg'):
-    #         os.remove(os.path.join(jpg_dir, file))
+    for file in os.listdir(jpg_dir):
+        if file.endswith('.jpg'):
+            os.remove(os.path.join(jpg_dir, file))

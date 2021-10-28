@@ -114,10 +114,10 @@ def gif_simulation():
     t_start = 0
     t_end = 25.2
     h = 0.1
-    A = 25
-    omega = 5
+    A = 40
+    omega = 8
     L = 1
-    theta_0 = 0.01
+    theta_0 = 3*np.pi/4
     t = np.arange(t_start, t_end, h)
 
     pivot = [0, 2]
@@ -154,9 +154,6 @@ def gif_simulation():
         ax.add_patch(
             plt.Rectangle((pivot[0] - (rect_size / 2), pivot[1] - (rect_size / 2)), rect_size, rect_size, fill=True,
                           color=color))
-        # plt.title(
-        #     fr'$A$ = {A}, $\omega$ = {omega}, $\theta_0$ = $\pi-0.01$, $b_m$ = {b_m}, $h$ = {h}' + '\n\n' +
-        #     fr'$t$ = {i}')
         plt.title(fr'Iteration {i}')
 
         if i < 10:
@@ -169,6 +166,3 @@ def gif_simulation():
         fig.clf()
 
     make_gif()
-
-
-gif_simulation()
