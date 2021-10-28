@@ -38,7 +38,7 @@ def order_of_convergence():
     plt.title(r'Order of convergence of angle $\theta$')
     plt.ylabel(r'$q$')
     plt.xlabel(r'$h$')
-    xP = [r'$1/2^8$', r'$1/2^9$', r'$1/2^{10}$', r'$1/2^{11}$',
+    x_values = [r'$1/2^8$', r'$1/2^9$', r'$1/2^{10}$', r'$1/2^{11}$',
           r'$1/2^{12}$', r'$1/2^{13}$']
     plt.xticks(list(range(len(x_values))), x_values)
     plt.tick_params(axis='x', which='major', labelsize=8)
