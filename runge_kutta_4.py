@@ -16,9 +16,10 @@ class Parameters:
         self.m = m
 
 
-# The vector function that represents the system of ODES 
+# The vector function that represents the system of ODEs
 def F(prev, t, param):
     # prev = [theta, phi, y_p, v_p]
+    # The new values of the system are computed below
     theta = prev[1]
     phi = -param.A * np.sin(param.omega * t) * np.sin(prev[0]) / param.L - param.b_m * prev[
         1] / param.m - param.g * np.sin(prev[0]) / param.L

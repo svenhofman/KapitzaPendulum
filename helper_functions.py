@@ -5,12 +5,13 @@ import imageio
 
 from runge_kutta_4 import runge_kutta_4
 
+# Global variables that correspond to Top, Bottom and No equlibrium
 OTHER = -1
 BOTTOM = 0
 TOP = 1
 
 
-# Auxiliary function that is calls runge_kutta_4() for all time steps
+# Auxiliary function that calls runge_kutta_4() for all time steps
 def aux_runge_kutta_4(param):
     t = np.arange(0, param.t_end + param.h, param.h)
     sol = np.empty((len(t), 4))

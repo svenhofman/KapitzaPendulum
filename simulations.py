@@ -8,16 +8,19 @@ from helper_functions import aux_runge_kutta_4
 from helper_functions import is_equilibrium
 from helper_functions import make_gif
 
+# Global variables that correspond to Top, Bottom and No equlibrium
 OTHER = -1
 BOTTOM = 0
 TOP = 1
 
 
+# Saves the data in the data folder with corresponding name
 def save_data(arr, name):
     np.savetxt(os.path.join("data", name), arr, delimiter=",")
 
-
+# Simulation corresponding to Figure 11
 def grid_simulation():
+    # Initialise the parameters and ranges
     h = 0.01
     t_end = 50
     A_max = 300
@@ -33,9 +36,10 @@ def grid_simulation():
     res = np.empty((len(omega_range), len(A_range)))
 
     row, col = 0, 0
-    # rows are different omega's corresponding to same A
+    # Rows are different omega's corresponding to same A
     for A in A_range:
         for omega in omega_range:
+            # Solve the system
             sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
             pos = is_equilibrium(sol)[1]
             print(f"A: {A} ({col}/{len(A_range)}), omega: {omega} ({row}/{len(omega_range)}) => Stability: {pos}")
@@ -46,35 +50,40 @@ def grid_simulation():
     save_data(res,
              f"A_range[1,{A_max}]({n_values_A})_omega_range[1,{omega_max}]({n_values_omega})_h={h}_t_end={t_end}.csv")
 
-
+# Simulation corresponding to Figure 9
 def smallest_omega_stability_simulation():
+    # Initialise the parameters and ranges
     h = 0.01
     t_end = 10
     A_min = 1
-    A_max = 500  # 500
+    A_max = 500 
     omega_min = 1
-    omega_max = 50  # 50
+    omega_max = 50
     A_step = 1
     omega_step = 1
-
     A_range = np.arange(A_min, A_max + A_step / 2, A_step)
     omega_range = np.arange(omega_min, omega_max + omega_step / 2, omega_step)
 
     res = np.empty((2, len(A_range)))
     col = 0
     for A in A_range:
+        # First row corresponds to amplitude
         res[0, col] = A
+        # By default the value of omega is -1
         res[1, col] = -1
         for omega in omega_range:
+            # Solve the system
             sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
+            # If the top stability is reached, set row value to corresponding omega
             if is_equilibrium(sol)[1] == TOP:
                 res[1][col] = omega
                 break
         col += 1
     save_data(res, "smallest_omega_stability_simulation.csv")
 
-
+# Simulation corresponding to Figure 10
 def regression_smallest_stability_omega_simulation():
+    # Initialise the parameters and ranges
     h = 0.01
     t_end = 10
     A_min = 200
@@ -83,7 +92,6 @@ def regression_smallest_stability_omega_simulation():
     omega_max = 40
     A_step = .1
     omega_step = .0001
-
     A_range = np.arange(A_min, A_max + A_step / 2, A_step)
     omega_range = np.arange(omega_min, omega_max + omega_step / 2, omega_step)
 
@@ -92,13 +100,17 @@ def regression_smallest_stability_omega_simulation():
     min_idx = 0
 
     for A in A_range:
+        # First row corresponds to amplitude
         res[0, col] = A
+        # By default the value of omega is -1
         res[1, col] = -1
         idx = min_idx
         while idx < len(omega_range):
             omega = omega_range[idx]
+            # Solve the system
             sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
             print(f"A: {A} ({col}/{len(A_range)}), omega: {omega}")
+            # If the top stability is reached, set row value to corresponding omega
             if is_equilibrium(sol)[1] == TOP:
                 print("=> Stability: TOP")
                 res[1][col] = omega
@@ -108,8 +120,9 @@ def regression_smallest_stability_omega_simulation():
         col += 1
     save_data(res, "regression_smallest_omega_stability_simulation_finer.csv")
 
-
+# Simulation that makes the GIFs
 def gif_simulation():
+    # Initialise the parameters
     t_start = 0
     t_end = 25.2
     h = 0.1
@@ -120,7 +133,7 @@ def gif_simulation():
     t = np.arange(t_start, t_end, h)
 
     pivot = [0, 2]
-
+    # Solve the system
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h, theta_0))
 
     for i in range(0, len(t) - 1):
@@ -140,6 +153,7 @@ def gif_simulation():
         plt.axis('on')
         plt.gca().set_aspect('equal', adjustable='box')
 
+        # Color last frame red if the pendulum has found an equilibrium
         color = "black"
         if i == len(t) - 2:
             is_eq, pos = is_equilibrium(sol)
@@ -147,6 +161,7 @@ def gif_simulation():
             if is_eq:
                 color = "red"
 
+        # Plot the pendulum
         plt.plot(x_values, y_values, color=color)
         ax.add_patch(plt.Circle((x, y), 0.1, fill=True, color=color))
         rect_size = 0.2
@@ -155,6 +170,7 @@ def gif_simulation():
                           color=color))
         plt.title(fr'Iteration {i}')
 
+        # Save the plots
         if i < 10:
             plt.savefig(os.path.join("images", f"image_00{i}.jpg"), bbox_inches='tight', dpi=150)
         elif i < 100:

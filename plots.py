@@ -7,21 +7,25 @@ from numpy import genfromtxt
 import matplotlib.mlab as mlab
 
 
+# Loads the data with corresponding name from the data folder
 def load_data(name):
     return genfromtxt(os.path.join("data", name), delimiter=",")
 
 
-# Figure 4
+# Figure 4 in the project PDF
 def order_of_convergence():
+    # Initialise the parameters
     A = 40
     omega = 8
     t_end = 10
+    # Initialise the amount of iterations
     n_steps = np.array([128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768])
     h_arr = t_end / n_steps
 
     theta = []
     y = []
 
+    # Compute the solution for each amount of iterations
     for idx in range(0, len(n_steps)):
         sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h_arr[idx]))
         theta.append(sol[int(n_steps[idx] / 2), 0])
@@ -30,10 +34,12 @@ def order_of_convergence():
     theta_conv = []
     y_conv = []
 
+    # Compute the convergence factor for both ODEs that are solved
     for k in range(0, len(n_steps) - 3):
         theta_conv.append(np.log2(abs(theta[k] - theta[k + 1]) / abs(theta[k + 1] - theta[k + 2])))
         y_conv.append(np.log2(abs((y[k]) - y[k + 1]) / abs(y[k + 1] - y[k + 2])))
 
+    # Plot for angle
     plt.figure(1)
     plt.title(r'Order of convergence of angle $\theta$')
     plt.ylabel(r'$q$')
@@ -42,9 +48,11 @@ def order_of_convergence():
           r'$1/2^{12}$', r'$1/2^{13}$']
     plt.xticks(list(range(len(x_values))), x_values)
     plt.tick_params(axis='x', which='major', labelsize=8)
+
     plt.plot(theta_conv, marker='o', color='k')
     plt.savefig(os.path.join('images', 'theta-convergence.pdf'))
 
+    # Plot for vertical oscillation
     plt.figure(2)
     plt.title(r'Order of convergence of $y_p$')
     plt.xlabel(r'$h$')
@@ -54,20 +62,24 @@ def order_of_convergence():
     plt.xticks(list(range(len(x_values))), x_values)
     plt.tick_params(axis='x', which='major', labelsize=8)
     plt.plot(y_conv, marker='o', color='k')
+
     plt.savefig(os.path.join('images', 'yp-convergence.pdf'))
     plt.show()
 
 
-# Figure 5
+# Figure 5 in the project PDF
 def no_oscillation():
+    # Initialise the parameters
     A = 0
     omega = 5
     t_end = 30
     h = 0.01
 
+    # Solve the system
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
     t = np.arange(0, t_end + h, h)
 
+    # Plot angle and angular velocity
     plt.plot(t, sol[:, 0], label=r'$\theta$', color='k')
     plt.plot(t, sol[:, 1], '--k', label=r'$\dot{\theta}$')
     plt.xlabel('t (seconds)')
@@ -78,19 +90,23 @@ def no_oscillation():
     plt.show()
 
 
-# Figure 6
+# Figure 6 in the project PDF
 def oscillation_stability():
+    # Initialise the parameters
     A = 40
     omega = 8
     t_end = 30
     h = 0.01
 
+    # Solve the system
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
     t = np.arange(0, t_end + h, h)
 
+    # Used to get two axes
     dummy, ax1 = plt.subplots()
     ax2 = ax1.twinx()
 
+    # Plot the angle
     ax1.plot(t, sol[:, 0], 'k')
     angle_deflection = sol[:, 0] - np.pi
     angle_deflection = angle_deflection / (2 * np.pi) * 360
@@ -105,17 +121,20 @@ def oscillation_stability():
     plt.show()
 
 
-# Figure 7
+# Figure 7 in the project PDF
 def bottom_unstable():
+    # Initialise the parameters
     A = 25
     omega = 5
     t_end = 30
     h = 0.01
     theta_0 = 0.01
 
+    # Solve the system
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h, theta_0))
     t = np.arange(0, t_end + h, h)
 
+    # Plot the angle with vertical oscillation
     plt.plot(t, sol[:, 0], color='k')
     plt.xlabel('t (seconds)')
     plt.ylabel(r'$\theta$')
@@ -125,16 +144,19 @@ def bottom_unstable():
     plt.show()
 
 
-# Figure 8
+# Figure 8 in the project PDF
 def top_unstable():
+    # Initialise the parameters
     A = 41
     omega = 9
     t_end = 30
     h = 0.01
 
+    # Solve the system
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
     t = np.arange(0, t_end + h, h)
-
+    
+    # Plot the angle with vertical oscillation
     plt.plot(t, sol[:, 0], color='k')
     plt.xlabel('t (seconds)')
     plt.ylabel(r'$\theta$')
@@ -144,9 +166,11 @@ def top_unstable():
     plt.show()
 
 
-# Figure 9
+# Figure 9 in the project PDF
 def smallest_omega_stability():
+    # Load data obtained from simulations
     res = load_data("smallest_omega_stability_simulation.csv")
+    # Plot the frequency vs the amplitude
     plt.plot(res[0, :], res[1, :], 'k,')
     plt.xlabel('$A$')
     plt.ylabel('$\omega$')
@@ -156,10 +180,13 @@ def smallest_omega_stability():
     plt.show()
 
 
-# Figure 10
+# Figure 10 in the project PDF
 def smallest_omega_regression_line():
+    # Load data obtained from simulations
     res = load_data("regression_smallest_omega_stability_simulation_finer.csv")
+    # Plot the stability line
     plt.plot(res[0, :], res[1, :], 'k--', label="Stability line")
+    # Find the slope and intercept of the regression line
     slope, intercept = np.polyfit(res[0, :], res[1, :], 1)
     print(f"Slope of regression line is approximately {round(slope, 2)}")
     plt.plot(res[0, :], slope * res[0, :] + intercept, 'k', label="Regression line")
@@ -173,7 +200,7 @@ def smallest_omega_regression_line():
     plt.show()
 
 
-# Figure 11
+# Figure 11 in the project PDF
 def plot_grid_amplitude_omega():
     # Grid for A from 1 to 300, 150 values
     A_range = np.linspace(1, 300, 150)
@@ -203,6 +230,7 @@ def plot_grid_amplitude_omega():
         col += 1
 
     start_idx = 70
+    # Find slope and intercept of regression line
     slope2, intercept2 = np.polyfit(first_stable_arr[0, start_idx:], first_stable_arr[1, start_idx:], 1)
     line2 = slope2 * A_range + intercept2
 
@@ -213,6 +241,7 @@ def plot_grid_amplitude_omega():
     x_values_one = []
     y_values_one = []
 
+    # Add configurations to corresponding array
     for i in range(len(omega_range)):
         for j in range(len(A_range)):
             if int(data[i, j]) == -1:
@@ -227,6 +256,7 @@ def plot_grid_amplitude_omega():
             else:
                 print(f"UNKNOWN: {int(data[i, j])}")
 
+    # Make the scatter plot
     marker_size = 2
     plt.plot(A_range[:idx], line1, color="black", label=f"$\omega_1 = {round(slope1, 2)}A$")
     plt.plot(A_range, line2, "-.", color="black", label=f"$\omega_2 = {round(slope2, 2)}A + {round(intercept2, 2)}$")
@@ -242,11 +272,13 @@ def plot_grid_amplitude_omega():
     plt.show()
 
 
-# Figure 12
+# Figure 12 in the project PDF
 def plot_grid_damping_angle0():
+    # Ranges of angle and damping considered
     angle_range = np.linspace(0, 2 * np.pi, 150)
     damping_range = np.linspace(0, 1.00, 100)
 
+    # Load the data obtained from the simulation
     data = load_data("data-demp.csv")
 
     x_values_neg = []
@@ -256,6 +288,7 @@ def plot_grid_damping_angle0():
     x_values_one = []
     y_values_one = []
 
+    # Add configurations to corresponding array
     for i in range(len(damping_range)):
         for j in range(len(angle_range)):
             if int(data[i, j]) == -1:
@@ -270,6 +303,7 @@ def plot_grid_damping_angle0():
             else:
                 print(f"UNKNOWN: {int(data[i, j])}")
 
+    # Make the scatter plot
     marker_size = 2
     plt.scatter(x_values_neg, y_values_neg, color="red", s=marker_size, label="No stability")
     plt.scatter(x_values_zero, y_values_zero, color="green", s=marker_size, label="Bottom equilibrium")
