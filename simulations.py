@@ -126,10 +126,10 @@ def gif_simulation():
     t_start = 0
     t_end = 25.2
     h = 0.1
-    A = 40
-    omega = 8
+    A = 25
+    omega = 5
     L = 1
-    theta_0 = 3*np.pi/4
+    theta_0 = 0.01
     t = np.arange(t_start, t_end, h)
 
     pivot = [0, 2]
@@ -149,6 +149,8 @@ def gif_simulation():
         # Set up plot layout
         fig, ax = plt.subplots()
         plt.xlim(-(L + 2), L + 2)
+        plt.xlabel(r'$x$')
+        plt.ylabel(r'$y$')
         plt.ylim(-(L + 2), L + 2)
         plt.axis('on')
         plt.gca().set_aspect('equal', adjustable='box')

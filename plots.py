@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import os
-from runge_kutta_4 import aux_runge_kutta_4
+from helper_functions import aux_runge_kutta_4
 from runge_kutta_4 import Parameters
 from numpy import genfromtxt
 import matplotlib.mlab as mlab
@@ -79,12 +79,19 @@ def no_oscillation():
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
     t = np.arange(0, t_end + h, h)
 
+    # Used to get two axes
+    dummy, ax1 = plt.subplots()
+    ax2 = ax1.twinx()
+
     # Plot angle and angular velocity
-    plt.plot(t, sol[:, 0], label=r'$\theta$', color='k')
-    plt.plot(t, sol[:, 1], '--k', label=r'$\dot{\theta}$')
-    plt.xlabel('t (seconds)')
+    l1, = ax1.plot(t, sol[:, 0], label=r'angle', color='k')
+    l2, = ax2.plot(t, sol[:, 1], '--k', label=r'angular velocity')
+    ax1.set_xlabel(r'$t$')
+    ax1.set_ylabel(r'$\theta$')
+    ax2.set_ylabel(r'$\dot\theta$')
+
+    plt.legend([l1, l2], ['angle', 'angular velocity'])
     plt.title('Angle and angular velocity over time with no oscillation')
-    plt.legend()
 
     plt.savefig(os.path.join('images', 'no_oscillation.pdf'))
     plt.show()
@@ -112,7 +119,7 @@ def oscillation_stability():
     angle_deflection = angle_deflection / (2 * np.pi) * 360
     ax2.plot(t, angle_deflection, 'k', alpha=0.3)
 
-    ax1.set_xlabel('t (seconds)')
+    ax1.set_xlabel(r'$t$')
     ax1.set_ylabel(r'$\theta$')
     ax2.set_ylabel(r'angular deflection (degrees)')
     plt.title('Angle over time with vertical oscillation')
@@ -136,7 +143,7 @@ def bottom_unstable():
 
     # Plot the angle with vertical oscillation
     plt.plot(t, sol[:, 0], color='k')
-    plt.xlabel('t (seconds)')
+    plt.xlabel(r'$t$')
     plt.ylabel(r'$\theta$')
     plt.title('Angle over time with vertical oscillation, starting near bottom eq.')
 
@@ -158,13 +165,12 @@ def top_unstable():
     
     # Plot the angle with vertical oscillation
     plt.plot(t, sol[:, 0], color='k')
-    plt.xlabel('t (seconds)')
+    plt.xlabel(r'$t$')
     plt.ylabel(r'$\theta$')
     plt.title('Angle over time with vertical oscillation')
 
     plt.savefig(os.path.join('images', 'top_unstable.pdf'))
     plt.show()
-
 
 # Figure 9 in the project PDF
 def smallest_omega_stability():
