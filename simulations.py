@@ -2,6 +2,7 @@ import numpy as np
 from numpy import genfromtxt
 import matplotlib.pyplot as plt
 import os
+import math
 
 from runge_kutta_4 import Parameters
 from helper_functions import aux_runge_kutta_4
@@ -14,9 +15,21 @@ BOTTOM = 0
 TOP = 1
 
 
+def num_digits(n):
+    if n > 0:
+        digits = int(math.log10(n)) + 1
+    elif n == 0:
+        digits = 1
+    else:
+        digits = int(math.log10(-n)) + 2  # +1 if you don't count the '-'
+
+    return digits
+
+
 # Saves the data in the data folder with corresponding name
 def save_data(arr, name):
     np.savetxt(os.path.join("data", name), arr, delimiter=",")
+
 
 # Simulation corresponding to Figure 11
 def grid_simulation():
@@ -48,7 +61,8 @@ def grid_simulation():
         row = 0
         col = col + 1
     save_data(res,
-             f"A_range[1,{A_max}]({n_values_A})_omega_range[1,{omega_max}]({n_values_omega})_h={h}_t_end={t_end}.csv")
+              f"A_range[1,{A_max}]({n_values_A})_omega_range[1,{omega_max}]({n_values_omega})_h={h}_t_end={t_end}.csv")
+
 
 # Simulation corresponding to Figure 9
 def smallest_omega_stability_simulation():
@@ -56,7 +70,7 @@ def smallest_omega_stability_simulation():
     h = 0.01
     t_end = 10
     A_min = 1
-    A_max = 500 
+    A_max = 500
     omega_min = 1
     omega_max = 50
     A_step = 1
@@ -80,6 +94,7 @@ def smallest_omega_stability_simulation():
                 break
         col += 1
     save_data(res, "smallest_omega_stability_simulation.csv")
+
 
 # Simulation corresponding to Figure 10
 def regression_smallest_stability_omega_simulation():
@@ -119,6 +134,7 @@ def regression_smallest_stability_omega_simulation():
             idx += 1
         col += 1
     save_data(res, "regression_smallest_omega_stability_simulation_finer.csv")
+
 
 # Simulation that makes the GIFs
 def gif_simulation():
@@ -172,14 +188,17 @@ def gif_simulation():
                           color=color))
         plt.title(fr'Iteration {i}')
 
-        # Save the plots
-        if i < 10:
-            plt.savefig(os.path.join("images", f"image_00{i}.jpg"), bbox_inches='tight', dpi=150)
-        elif i < 100:
-            plt.savefig(os.path.join("images", f"image_0{i}.jpg"), bbox_inches='tight', dpi=150)
-        else:
-            plt.savefig(os.path.join("images", f"image_{i}.jpg"), bbox_inches='tight', dpi=150)
+        # Save the plots. Makes sure to append the proper prefix to ensure that it is sorted correctly
+        num_digits_t = num_digits(len(t))
+        num_digits_i = num_digits(i)
+        prefix = '0' * (num_digits_t - num_digits_i)
+        plt.savefig(os.path.join("images", f"image_{prefix}{i}.jpg"), bbox_inches='tight', dpi=150)
+
         plt.clf()
         fig.clf()
+        plt.close(fig)
 
     make_gif()
+
+
+gif_simulation()

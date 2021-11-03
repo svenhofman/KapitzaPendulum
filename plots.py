@@ -45,7 +45,7 @@ def order_of_convergence():
     plt.ylabel(r'$q$')
     plt.xlabel(r'$h$')
     x_values = [r'$1/2^8$', r'$1/2^9$', r'$1/2^{10}$', r'$1/2^{11}$',
-          r'$1/2^{12}$', r'$1/2^{13}$']
+                r'$1/2^{12}$', r'$1/2^{13}$']
     plt.xticks(list(range(len(x_values))), x_values)
     plt.tick_params(axis='x', which='major', labelsize=8)
 
@@ -162,7 +162,7 @@ def top_unstable():
     # Solve the system
     sol = aux_runge_kutta_4(Parameters(A, omega, t_end, h))
     t = np.arange(0, t_end + h, h)
-    
+
     # Plot the angle with vertical oscillation
     plt.plot(t, sol[:, 0], color='k')
     plt.xlabel(r'$t$')
@@ -171,6 +171,7 @@ def top_unstable():
 
     plt.savefig(os.path.join('images', 'top_unstable.pdf'))
     plt.show()
+
 
 # Figure 9 in the project PDF
 def smallest_omega_stability():
