@@ -199,6 +199,3 @@ def gif_simulation():
         plt.close(fig)
 
     make_gif()
-
-
-gif_simulation()
